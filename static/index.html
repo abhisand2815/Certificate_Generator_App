@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CertiCraft Studio • Bit By Bit - VIT Bhopal University</title>
+  <meta name="description" content="Local offline Certificate Generator for Bit By Bit, VIT Bhopal University with drag-and-drop text placement and batch PDF export.">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand">
+      <img src="/static/logo.png" alt="Bit By Bit - VIT Bhopal University" class="org-logo">
+      <div class="brand-divider"></div>
+      <div class="brand-title-group">
+        <span class="brand-name">Certificate Studio</span>
+        <span class="brand-sub">Bit By Bit • VIT Bhopal</span>
+      </div>
+    </div>
+    <div class="offline-badge">
+      <span class="status-dot"></span>
+      100% Offline Engine
+    </div>
+  </header>
+
+  <!-- Step Wizard Navigation Bar -->
+  <nav class="wizard-bar">
+    <div class="step-item active" id="step-nav-1">
+      <div class="step-number">1</div>
+      <span>Upload Template & Data</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item" id="step-nav-2">
+      <div class="step-number">2</div>
+      <span>Place & Style Fields</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item" id="step-nav-3">
+      <div class="step-number">3</div>
+      <span>Batch Generate & Download</span>
+    </div>
+  </nav>
+
+  <!-- Main App Layout Container -->
+  <main class="main-container">
+
+    <!-- STEP 1: UPLOAD TEMPLATE & CSV -->
+    <section class="step-panel active" id="step-panel-1">
+      <div class="panel-header-block">
+        <h2 class="panel-title">Step 1: Upload Certificate Assets</h2>
+        <p class="panel-subtitle">Upload your blank certificate template image and recipient details CSV list.</p>
+      </div>
+
+      <div class="dual-grid">
+        <!-- Template Upload Dropzone -->
+        <div class="glass-card">
+          <div class="card-header">
+            <span class="card-step-badge">01</span>
+            <h3 class="card-title">Certificate Template (PNG / JPG)</h3>
+          </div>
+          <div class="dropzone" id="template-dropzone">
+            <div class="dropzone-icon-bg">🖼️</div>
+            <div class="dropzone-text">Click or Drag & Drop Template Image</div>
+            <div class="dropzone-sub">Supports PNG, JPG, JPEG (High-Res recommended)</div>
+            <input type="file" id="template-input" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+            <div class="file-preview-box" id="template-file-info" style="display: none;">
+              <span class="file-icon">🖼️</span>
+              <span id="template-filename" class="file-name-text">template.png</span>
+              <span id="template-dims" class="file-meta-text">1920 × 1080 px</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CSV Upload Dropzone -->
+        <div class="glass-card">
+          <div class="card-header">
+            <span class="card-step-badge">02</span>
+            <h3 class="card-title">Recipients CSV File</h3>
+          </div>
+          <div class="dropzone" id="csv-dropzone">
+            <div class="dropzone-icon-bg">📊</div>
+            <div class="dropzone-text">Click or Drag & Drop Recipients CSV</div>
+            <div class="dropzone-sub">Required Columns: Name, Registration Number</div>
+            <input type="file" id="csv-input" accept=".csv" style="display: none;">
+            <div class="file-preview-box" id="csv-file-info" style="display: none;">
+              <span class="file-icon">📄</span>
+              <span id="csv-filename" class="file-name-text">recipients.csv</span>
+              <span id="csv-count" class="file-meta-text">0 rows</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CSV Validation Results Card -->
+      <div class="glass-card csv-validation-card" id="csv-results-card" style="display: none;">
+        <div class="validation-header-row">
+          <h3>Recipients Data Validation</h3>
+          <div id="validation-summary-badges" class="summary-badges-group"></div>
+        </div>
+
+        <div id="csv-alerts-container" style="margin-top: 1rem;"></div>
+
+        <div class="table-wrapper">
+          <table class="data-table" id="recipients-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Recipient Name</th>
+                <th>Registration Number</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recipients-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <div></div>
+        <button class="btn btn-primary" id="btn-to-step2" disabled>
+          <span>Proceed to Placement & Styling</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 2: VISUAL PLACEMENT EDITOR & TYPOGRAPHY -->
+    <section class="step-panel" id="step-panel-2">
+      <div class="panel-header-block">
+        <h2 class="panel-title">Step 2: Visual Placement & Typography Editor</h2>
+        <p class="panel-subtitle">Drag text boxes to position "Name" and "Registration Number" on the template preview. Customize fonts below.</p>
+      </div>
+
+      <div class="editor-layout">
+        <!-- Visual Editor Canvas Viewport -->
+        <div class="editor-viewport">
+          <div class="canvas-container" id="editor-canvas-container">
+            <img id="template-preview-img" src="" alt="Template Preview">
+          </div>
+        </div>
+
+        <!-- Typography & Control Sidebar -->
+        <div class="glass-card controls-sidebar">
+          <div class="control-tabs">
+            <button class="tab-btn active" id="tab-btn-name">Name Box</button>
+            <button class="tab-btn" id="tab-btn-reg_no">Reg No Box</button>
+          </div>
+
+          <!-- Active Control Form -->
+          <div id="typography-controls">
+            <!-- Font Family -->
+            <div class="form-group">
+              <label class="form-label" for="font-family-select">Font Family (Local TTF)</label>
+              <select class="form-control" id="font-family-select"></select>
+            </div>
+
+            <!-- Base Font Size -->
+            <div class="form-group">
+              <label class="form-label" for="font-size-input">Font Size (pt)</label>
+              <div class="slider-row">
+                <input type="range" class="form-slider" id="font-size-slider" min="12" max="120" value="48">
+                <input type="number" class="form-control num-input" id="font-size-input" min="8" max="200" value="48">
+              </div>
+            </div>
+
+            <!-- Color Picker -->
+            <div class="form-group">
+              <label class="form-label" for="font-color-hex">Text Color</label>
+              <div class="color-input-row">
+                <input type="color" class="color-picker" id="font-color-picker" value="#1E3A8A">
+                <input type="text" class="form-control" id="font-color-hex" value="#1E3A8A">
+              </div>
+            </div>
+
+            <!-- Text Alignment -->
+            <div class="form-group">
+              <label class="form-label">Alignment</label>
+              <div class="btn-group">
+                <button class="btn-option" id="align-left">Left</button>
+                <button class="btn-option active" id="align-center">Center</button>
+                <button class="btn-option" id="align-right">Right</button>
+              </div>
+            </div>
+
+            <!-- Bold / Italic Toggles -->
+            <div class="form-group">
+              <label class="form-label">Style Options</label>
+              <div class="btn-group">
+                <button class="btn-option active" id="toggle-bold">Bold</button>
+                <button class="btn-option" id="toggle-italic">Italic</button>
+              </div>
+            </div>
+
+            <!-- Auto-fit Note -->
+            <div class="alert alert-info">
+              💡 <strong>Auto-Fit Enabled:</strong> If recipient names exceed the box width, font size auto-shrinks for zero overflow or typos.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <button class="btn btn-secondary" id="btn-back-to-step1">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>Back to Uploads</span>
+        </button>
+        <div class="btn-action-group">
+          <button class="btn btn-secondary" id="btn-render-preview">
+            <span>Update Sample Preview</span>
+          </button>
+          <button class="btn btn-primary" id="btn-to-step3">
+            <span>Proceed to Batch Generation</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: SAMPLE PREVIEW & BATCH GENERATION -->
+    <section class="step-panel" id="step-panel-3">
+      <div class="panel-header-block">
+        <h2 class="panel-title">Step 3: Preview & Batch Export</h2>
+        <p class="panel-subtitle">Inspect actual Pillow-rendered sample certificate, then generate your complete PDF batch ZIP.</p>
+      </div>
+
+      <div class="preview-grid">
+        <!-- Rendered Sample Certificate Box -->
+        <div class="glass-card preview-container">
+          <div class="preview-header-row">
+            <h3>Sample Certificate Preview</h3>
+            <select class="form-control" id="sample-recipient-select"></select>
+          </div>
+
+          <div class="preview-img-box">
+            <img id="rendered-preview-img" src="" alt="Rendered Certificate Preview">
+          </div>
+        </div>
+
+        <!-- Batch Generation Control Center -->
+        <div class="glass-card batch-center-card">
+          <div>
+            <h3 class="batch-title">Batch Processing Center</h3>
+            <p class="batch-subtitle" id="batch-summary-text">
+              Ready to generate 0 certificates in PDF format.
+            </p>
+
+            <!-- Pre-generation Info Card -->
+            <div class="alert alert-info">
+              ⚡ Background process generates individual PDF certificates per recipient packaged into a ZIP archive.
+            </div>
+
+            <!-- Active Progress Card -->
+            <div class="progress-card" id="batch-progress-card" style="display: none;">
+              <div class="progress-status-row">
+                <span id="batch-status-text">Processing certificates...</span>
+                <span id="batch-progress-count">0 / 0</span>
+              </div>
+
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="batch-progress-fill"></div>
+              </div>
+            </div>
+
+            <!-- Download Banner (Appears on Completion) -->
+            <div class="alert alert-success" id="download-success-banner" style="display: none;">
+              🎉 <strong>Batch Completed!</strong> All certificates rendered into PDF format and archived.
+            </div>
+          </div>
+
+          <div class="batch-action-block">
+            <button class="btn btn-primary btn-large" id="btn-start-batch">
+              <span>🚀 Start Batch PDF Generation</span>
+            </button>
+
+            <a id="download-zip-link" class="btn btn-success btn-large" style="display: none; text-decoration: none;" download>
+              <span>📦 Download All Certificates (.ZIP)</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <button class="btn btn-secondary" id="btn-back-to-step2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>Back to Placement</span>
+        </button>
+        <div></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JS Scripts -->
+  <script src="/static/js/editor.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
